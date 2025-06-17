@@ -20,13 +20,6 @@ fn main() {
         println!("Body: {}", body);
         let mut response = Response::new(200);
         response.with_text("Hi");
-        response.with_headers(HashMap::from([
-            ("Server".to_string(), "Rust".to_string()),
-            (
-                "Date".to_string(),
-                "Tue, 17 Jun 2025 12:00:00 GMT".to_string(),
-            ),
-        ]));
         response
     });
 

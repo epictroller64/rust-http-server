@@ -25,7 +25,7 @@ impl Response {
     pub fn new(response_code: u16) -> Self {
         Self {
             response_code,
-            headers: HashMap::new(),
+            headers: HashMap::from([("Server".to_string(), "Rust".to_string())]),
             body: String::new(),
         }
     }
@@ -46,6 +46,16 @@ impl Response {
 
     pub fn with_headers(&mut self, headers: HashMap<String, String>) {
         self.headers.extend(headers);
+    }
+
+    pub fn date_header(&mut self) {
+        self.with_header(
+            "Date",
+            chrono::Utc::now()
+                .format("%a, %d %b %Y %H:%M:%S GMT")
+                .to_string()
+                .as_str(),
+        );
     }
 }
 

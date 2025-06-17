@@ -72,7 +72,11 @@ fn handle_client(stream: TcpStream, handlers: &HashMap<String, Handler>) {
 
     // Find the appropriate handler
     if let Some(handler) = handlers.get(&request.path) {
-        let response = (handler.handler)(request);
+        let mut response = (handler.handler)(request);
+
+        // Add date header
+        response.date_header();
+
         let response_str = format!(
             "HTTP/1.1 {} OK\r\nContent-Length: {}\r\n{}\r\n\r\n{}",
             response.response_code,
