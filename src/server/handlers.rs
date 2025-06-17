@@ -6,12 +6,13 @@ pub struct Handler {
     pub handler: fn(Request) -> Response,
 }
 
+#[derive(Debug)]
 pub struct Request {
     pub path: String,
     pub method: String,
     pub version: String,
     pub headers: HashMap<String, String>,
-    pub body: [u8; 1024],
+    pub body: Vec<u8>,
 }
 
 pub struct Response {
