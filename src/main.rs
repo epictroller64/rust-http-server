@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use rust_tcp_server::server::{handlers::Response, server::Server};
 
 // Working example on how to use the library

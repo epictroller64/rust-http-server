@@ -4,7 +4,10 @@ use std::{
     net::{TcpListener, TcpStream},
 };
 
-use crate::server::handlers::{Handler, Request, Response};
+use crate::server::{
+    handlers::{Handler, Request, Response},
+    threadpool::ThreadPool,
+};
 
 pub struct Server {
     handlers: HashMap<String, Handler>,
@@ -44,10 +47,12 @@ impl Server {
     pub fn start_server(&self) -> Result<(), Box<dyn std::error::Error>> {
         let listener = TcpListener::bind(format!("127.0.0.1:{}", self.port))?;
         println!("Server is running on port {}", self.port);
+        let pool = ThreadPool::new(4);
         for stream in listener.incoming() {
             match stream {
                 Ok(stream) => {
-                    handle_client(stream, &self.handlers);
+                    let handlers = self.handlers.clone();
+                    pool.execute(move || handle_client(stream, &handlers));
                 }
                 Err(e) => {
                     eprintln!("Error accepting connection: {}", e);
