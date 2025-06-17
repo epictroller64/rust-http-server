@@ -74,9 +74,15 @@ fn handle_client(stream: TcpStream, handlers: &HashMap<String, Handler>) {
     if let Some(handler) = handlers.get(&request.path) {
         let response = (handler.handler)(request);
         let response_str = format!(
-            "HTTP/1.1 {} OK\r\nContent-Length: {}\r\n\r\n{}",
+            "HTTP/1.1 {} OK\r\nContent-Length: {}\r\n{}\r\n\r\n{}",
             response.response_code,
             response.body.len(),
+            response
+                .headers
+                .iter()
+                .map(|(k, v)| format!("{}: {}", k, v))
+                .collect::<Vec<String>>()
+                .join("\r\n"),
             response.body
         );
         if let Err(e) = stream.write_all(response_str.as_bytes()) {
