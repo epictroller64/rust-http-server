@@ -22,12 +22,22 @@ pub struct Response {
 }
 
 impl Response {
-    pub fn new(response_code: u16, body: String) -> Self {
+    pub fn new(response_code: u16) -> Self {
         Self {
             response_code,
-            body,
             headers: HashMap::new(),
+            body: String::new(),
         }
+    }
+
+    pub fn with_json(&mut self, json: serde_json::Value) {
+        self.body = json.to_string();
+        self.with_header("Content-Type", "application/json");
+    }
+
+    pub fn with_text(&mut self, text: &str) {
+        self.body = text.to_string();
+        self.with_header("Content-Type", "text/plain");
     }
 
     pub fn with_header(&mut self, key: &str, value: &str) {
