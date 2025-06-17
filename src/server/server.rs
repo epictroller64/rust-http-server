@@ -44,6 +44,28 @@ impl Server {
         );
     }
 
+    pub fn delete(&mut self, path: &str, handler: fn(Request) -> Response) {
+        self.handlers.insert(
+            path.to_string(),
+            Handler {
+                path: path.to_string(),
+                method: "DELETE".to_string(),
+                handler,
+            },
+        );
+    }
+
+    pub fn put(&mut self, path: &str, handler: fn(Request) -> Response) {
+        self.handlers.insert(
+            path.to_string(),
+            Handler {
+                path: path.to_string(),
+                method: "PUT".to_string(),
+                handler,
+            },
+        );
+    }
+
     pub fn start_server(&self) -> Result<(), Box<dyn std::error::Error>> {
         let listener = TcpListener::bind(format!("127.0.0.1:{}", self.port))?;
         println!("Server is running on port {}", self.port);

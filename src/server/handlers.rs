@@ -1,4 +1,8 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::{BufReader, Read},
+};
 
 #[derive(Clone)]
 pub struct Handler {
@@ -39,6 +43,40 @@ impl Response {
     pub fn with_text(&mut self, text: &str) {
         self.body = text.to_string();
         self.with_header("Content-Type", "text/plain");
+    }
+
+    pub fn with_html(&mut self, html: &str) {
+        self.body = html.to_string();
+        self.with_header("Content-Type", "text/html");
+    }
+
+    pub fn with_file(&mut self, file_path: &str) {
+        let file = File::open(file_path).unwrap();
+        let mut reader = BufReader::new(file);
+        let mut buffer = Vec::new();
+        reader.read_to_end(&mut buffer).unwrap();
+        let content_length = buffer.len();
+        self.body = String::from_utf8(buffer).unwrap();
+        // Get the file extension from the path string
+        let extension = std::path::Path::new(file_path)
+            .extension()
+            .unwrap_or_default()
+            .to_str()
+            .unwrap_or("");
+        let content_type = match extension {
+            "html" => "text/html",
+            "css" => "text/css",
+            "js" => "application/javascript",
+            "png" => "image/png",
+            "jpg" => "image/jpeg",
+            "jpeg" => "image/jpeg",
+            "gif" => "image/gif",
+            "svg" => "image/svg+xml",
+            "ico" => "image/x-icon",
+            _ => "application/octet-stream",
+        };
+        self.with_header("Content-Type", content_type);
+        self.with_header("Content-Length", content_length.to_string().as_str());
     }
 
     pub fn with_header(&mut self, key: &str, value: &str) {
